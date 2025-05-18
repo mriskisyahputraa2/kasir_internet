@@ -1,0 +1,19 @@
+FROM php:8.3.9-fpm
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    zip \
+    git \
+    unzip \
+    curl
+
+# Install extensions
+RUN docker-php-ext-install pdo_mysql gd
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
