@@ -16,6 +16,12 @@
                 <span>Kasir</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('kasir.transaksi') }}">
+                <i class="bi bi-cash-coin"></i>
+                <span>Julhadi</span>
+            </a>
+        </li>
 
         <!-- Kelola Dana -->
         <li class="nav-item">

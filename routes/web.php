@@ -81,6 +81,7 @@ Route::middleware(['auth.session', 'check.toko'])->group(function () {
         });
     });
 
+
     Route::resource('kasir', DataTransaksiController::class);
     // KELOLA DANA
     Route::resource('tambah-saldo', TambahSaldoController::class)->except(['show']);
