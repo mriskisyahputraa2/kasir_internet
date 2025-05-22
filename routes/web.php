@@ -34,17 +34,18 @@ use App\Http\Controllers\SesiKasirController;
 //     return view("welcome");
 // });
 
+// Redirect root ke login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// --------------------------
 // ROUTE UNTUK GUEST (BELUM LOGIN)
-// --------------------------
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
+
+
 
 // --------------------------
 // ROUTE AUTHENTIKASI
@@ -59,12 +60,6 @@ Route::middleware(['auth.session', 'check.toko'])->group(function () {
     Route::post('/set-toko', [AuthController::class, 'setToko'])->name('set-toko');
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // PILIH TOKO (KHUSUS SUPERADMIN)
-    Route::middleware('superadmin')->group(function () {
-        Route::get('/pilih-toko', [AuthController::class, 'pilihToko'])->name('pilih-toko');
-        Route::post('/set-toko', [AuthController::class, 'setToko'])->name('set-toko');
-    });
 
     // ABSENSI
     Route::prefix('absensi')->group(function () {
@@ -81,8 +76,14 @@ Route::middleware(['auth.session', 'check.toko'])->group(function () {
         });
     });
 
-
+    // Data transaksi kasir (CRUD transaksi kasir)
     Route::resource('kasir', DataTransaksiController::class);
+
+    // Halaman kasir-transaksi (redirect ke kasir.index)
+    Route::get('/kasir-transaksi', function () {
+        return redirect()->route('kasir.index');
+    })->name('kasir.transaksi');
+
     // KELOLA DANA
     Route::resource('tambah-saldo', TambahSaldoController::class)->except(['show']);
     Route::resource('pindahan-dana', PindahanDanaController::class);
@@ -95,8 +96,41 @@ Route::middleware(['auth.session', 'check.toko'])->group(function () {
     Route::resource('kelola-stok', KelolaStokController::class);
 
 
+    // Transaksi
+    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+    Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('/transaksi/pembayaran/{id}', [TransaksiController::class, 'pembayaran'])->name('transaksi.pembayaran');
+    Route::post('/transaksi/complete/{id}', [TransaksiController::class, 'completePayment'])->name('transaksi.complete');
+    Route::get('/transaksi/bayar-nanti', [TransaksiController::class, 'listBayarNanti'])->name('transaksi.bayar-nanti');
+    Route::get('/transaksi/lanjutkan/{id}', [TransaksiController::class, 'lanjutkanPembayaran'])->name('transaksi.lanjutkan');
+    Route::post('/transaksi/{id}/bayar-nanti', [TransaksiController::class, 'bayarNantiStore'])
+        ->name('transaksi.bayar.nanti');
+    Route::delete('/transaksi/{id}/cancel', [TransaksiController::class, 'cancel'])
+        ->name('transaksi.cancel');
+
+    // Sesi kasir (buka/tutup kasir)
+    Route::get('/sesi-kasir', [SesiKasirController::class, 'index'])->name('sesi.kasir');
+    Route::post('/buka-kasir', [SesiKasirController::class, 'bukaKasir'])->name('buka.kasir');
+    Route::post('/tutup-kasir', [SesiKasirController::class, 'tutupKasir'])->name('tutup.kasir');
+    Route::get('/riwayat-sesi-kasir', [SesiKasirController::class, 'riwayatSesiKasir'])->name('riwayat.sesi.kasir');
+
+
+    // // PILIH TOKO (KHUSUS SUPERADMIN)
+    // Route::middleware('superadmin')->group(function () {
+    //     Route::get('/pilih-toko', [AuthController::class, 'pilihToko'])->name('pilih-toko');
+    //     Route::post('/set-toko', [AuthController::class, 'setToko'])->name('set-toko');
+    // });
+
+    // Pengaturan (superadmin)
+    Route::middleware('superadmin')->prefix('pengaturan')->group(function () {
+        Route::post('/karyawan/{id}/pilih-toko', [DataKaryawan::class, 'pilihToko'])->name('karyawan.pilih-toko');
+        Route::resource('toko', DataToko::class);
+        Route::resource('shift', ShiftController::class);
+    });
+
+
     // TRANSAKSI
-    Route::get('/kasir', [KasirTransaksiController::class, 'index'])->name('kasir.transaksi');
+    // Route::get('/kasir', [KasirTransaksiController::class, 'index'])->name('kasir.transaksi');
     Route::get('/', [TransaksiController::class, 'index'])->name('transaksi.index');
     Route::post('/', [TransaksiController::class, 'store'])->name('transaksi.store');
     Route::get('/pembayaran/{id}', [TransaksiController::class, 'pembayaran'])->name('transaksi.pembayaran');
@@ -125,32 +159,6 @@ Route::middleware(['auth.session', 'check.toko'])->group(function () {
 
     Route::resource('/kelola-stok', KelolaStokController::class);
     Route::get('/kasir-transaksi', [KasirTransaksiController::class, 'index'])->name('kasir.transaksi');
-
-    // Transaksi
-    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
-    Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
-    Route::get('/transaksi/pembayaran/{id}', [TransaksiController::class, 'pembayaran'])->name('transaksi.pembayaran');
-    Route::post('/transaksi/complete/{id}', [TransaksiController::class, 'completePayment'])->name('transaksi.complete');
-    Route::get('/transaksi/bayar-nanti', [TransaksiController::class, 'listBayarNanti'])->name('transaksi.bayar-nanti');
-    Route::get('/transaksi/lanjutkan/{id}', [TransaksiController::class, 'lanjutkanPembayaran'])->name('transaksi.lanjutkan');
-
-
-
-
-    Route::get('/sesi-kasir', [SesiKasirController::class, 'index'])->name('sesi.kasir');
-    Route::post('/buka-kasir', [SesiKasirController::class, 'bukaKasir'])->name('buka.kasir');
-    Route::post('/tutup-kasir', [SesiKasirController::class, 'tutupKasir'])->name('tutup.kasir');
-    Route::get('/riwayat-sesi-kasir', [SesiKasirController::class, 'riwayatSesiKasir'])->name('riwayat.sesi.kasir');
-
-
-    // Ubah route untuk Bayar Nanti
-    Route::post('/transaksi/{id}/bayar-nanti', [TransaksiController::class, 'bayarNantiStore'])
-        ->name('transaksi.bayar.nanti');
-
-
-    // Ubah route untuk Cancel
-    Route::delete('/transaksi/{id}/cancel', [TransaksiController::class, 'cancel'])
-        ->name('transaksi.cancel');
 });
 
 // --------------------------

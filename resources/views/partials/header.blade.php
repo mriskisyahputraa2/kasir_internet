@@ -72,6 +72,24 @@
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
 
+    {{-- Tombol Buka/Tutup Kasir hanya di halaman kasir-transaksi --}}
+    @if (Route::currentRouteName() === 'kasir.transaksi' && ($role === 'kasir' || $role === 'admin'))
+        <button type="button"
+            class="btn ms-3
+        @if ($sesiAktif) text-white @else text-dark @endif"
+            style="
+        @if ($sesiAktif) background-color: #633B48;
+        @else
+            background-color: rgba(255,255,255,0.7);
+            border: 1px solid #633B48; @endif"
+            data-bs-toggle="modal" data-bs-target="#kasirModal">
+            @if ($sesiAktif)
+                <i class="bi bi-unlock-fill me-1"></i> Tutup Kasir
+            @else
+                <i class="bi bi-lock-fill me-1"></i> Buka Kasir
+            @endif
+        </button>
+    @endif
     <nav class="header-nav ms-auto">
         <ul class="d-flex align-items-center">
             <li class="nav-item dropdown pe-3">
@@ -138,5 +156,16 @@
     </nav>
     <!-- End Icons Navigation -->
 </header>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+        }
+    });
+</script>
 
 <!-- <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->

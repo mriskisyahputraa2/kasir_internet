@@ -32,9 +32,14 @@ class Produk extends Model
     {
         return $this->belongsTo(Kategori::class, 'kategori');
     }
-   
+
+    // public function kategori()
+    // {
+    //     return $this->belongsTo(Kategori::class, 'kategori_id');
+    // }
+
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id');
+        return $this->belongsTo(Kategori::class, 'kategori');
     }
 }

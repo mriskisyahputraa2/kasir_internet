@@ -151,8 +151,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+
+                {{-- popup buka kasir dan tutup kasir --}}
                 <h5 class="modal-title">
-                    @if ($sesiAktif)
+                    @if ($sesiAktif && is_object($sesiAktif))
                         Tutup Kasir
                     @else
                         Buka Kasir
@@ -160,10 +162,11 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ $sesiAktif ? route('tutup.kasir') : route('buka.kasir') }}" method="POST">
+            <form action="{{ $sesiAktif && is_object($sesiAktif) ? route('tutup.kasir') : route('buka.kasir') }}"
+                method="POST">
                 @csrf
                 <div class="modal-body">
-                    @if ($sesiAktif)
+                    @if ($sesiAktif && is_object($sesiAktif))
                         <div class="alert alert-info">
                             <h5>Informasi Sesi Kasir</h5>
                             <p>Shift: {{ $sesiAktif->shift->nama_shift }}</p>
@@ -195,8 +198,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn text-white" style="background-color: #633B48">
-
-                        @if ($sesiAktif)
+                        @if ($sesiAktif && is_object($sesiAktif))
                             Tutup Kasir
                         @else
                             Buka Kasir
@@ -207,3 +209,13 @@
         </div>
     </div>
 </div>
+@if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Membuka Kasir',
+            text: '{{ session('error') }}',
+            confirmButtonColor: '#633B48'
+        });
+    </script>
+@endif

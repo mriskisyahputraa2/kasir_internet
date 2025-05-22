@@ -41,11 +41,22 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
+        // $request->validate([
+        //     'produk_id.*' => 'required|exists:produks,id',
+        //     'jumlah.*' => 'required|integer|min:1',
+        //     'status_pembayaran' => 'required|in:Belum Lunas,Bayar Nanti',
+        // ]);
         $request->validate([
+            'produk_id' => 'required|array|min:1',
             'produk_id.*' => 'required|exists:produks,id',
+            'jumlah' => 'required|array|min:1',
             'jumlah.*' => 'required|integer|min:1',
             'status_pembayaran' => 'required|in:Belum Lunas,Bayar Nanti',
+        ], [
+            'produk_id.required' => 'Silakan tambahkan minimal satu produk sebelum memproses transaksi.',
+            'jumlah.required' => 'Jumlah produk tidak boleh kosong.',
         ]);
+
 
         $idToko = session('id_toko');
         $totalHarga = 0;
@@ -104,7 +115,7 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::with('details.produk')->findOrFail($id);
 
-        return view('transaksi.pembayaran', compact('transaksi', ));
+        return view('transaksi.pembayaran', compact('transaksi',));
     }
     /**
      * Menyelesaikan pembayaran.

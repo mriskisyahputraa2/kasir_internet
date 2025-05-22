@@ -120,6 +120,28 @@
             });
         }
     });
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("form-transaksi");
+        const daftarPembelian = document.getElementById("daftar-pembelian");
+
+        form.addEventListener("submit", function(e) {
+            if (daftarPembelian.children.length === 0) {
+                e.preventDefault(); // cegah pengiriman form
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Daftar pembelian masih kosong!',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+
+                return false;
+            }
+        });
+    });
 </script>
 
 <script>
@@ -133,3 +155,5 @@
         }, 5000);
     });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

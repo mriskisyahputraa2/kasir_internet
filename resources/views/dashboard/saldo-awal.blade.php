@@ -50,6 +50,7 @@
                                     @foreach ($tambahSaldos as $saldo)
                                         <tr>
                                             <td>
+                                                {{-- <img src="{{ asset('storage/' . $saldo->logo) }}" width="50" /> --}}
                                                 <img src="{{ asset('storage/' . $saldo->logo) }}" width="50" />
                                             </td>
                                             <td>{{ $saldo->nama_platform }}</td>

@@ -9,87 +9,22 @@
         </li>
         <!-- End Dashboard Nav -->
 
-        <!-- Kasir -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('kasir.transaksi') }}">
-                <i class="bi bi-cash-coin"></i>
-                <span>Kasir</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('kasir.transaksi') }}">
-                <i class="bi bi-cash-coin"></i>
-                <span>Julhadi</span>
-            </a>
-        </li>
+        @php $role = auth()->user()->role; @endphp
 
-        <!-- Kelola Dana -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-menu-button-wide"></i>
-                <span>Kelola Dana</span>
-                <i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="{{ route('tambah-saldo.index') }}">
-                        <i class="bi bi-circle"></i>
-                        <span>Saldo Awal</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('pindahan-dana.index') }}">
-                        <i class="bi bi-circle"></i>
-                        <span>Pindahan Dana</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('pinjaman-dana.index') }}">
-                        <i class="bi bi-circle"></i>
-                        <span>Pinjaman</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <!-- Kelola Produk -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                <i class="ri-shopping-cart-2-line"></i><span>Kelola Produk</span><i
-                    class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="{{ route('kategori.index') }}">
-                        <i class="bi bi-circle"></i><span>Kategori</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('produk.index') }}">
-                        <i class="bi bi-circle"></i><span>Produk</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('kelola-stok.index') }}">
-                        <i class="bi bi-circle"></i><span>Kelola Stok</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <!-- Absensi -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#absensi-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-calendar-check"></i><span>Absensi</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="absensi-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-                @if (auth()->user()->role === 'superadmin')
-                    <li>
-                        <a href="{{ route('absensi.karyawan') }}">
-                            <i class="bi bi-circle"></i><span>Absensi Karyawan</span>
-                        </a>
-                    </li>
-                @else
+        @if ($role === 'kasir')
+            <!-- Kasir -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{{ route('kasir.transaksi') }}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Kasir</span>
+                </a>
+            </li>
+            <!-- Absensi -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#absensi-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-calendar-check"></i><span>Absensi</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="absensi-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="{{ route('absensi.hari-ini') }}">
                             <i class="bi bi-circle"></i><span>Absensi Hari Ini</span>
@@ -100,14 +35,138 @@
                             <i class="bi bi-circle"></i><span>Daftar Absen</span>
                         </a>
                     </li>
-                @endif
-            </ul>
-        </li>
-
-        <!-- Pengaturan -->
-        @if (auth()->user()->role === 'superadmin')
+                </ul>
+            </li>
+        @elseif ($role === 'admin')
+            <!-- Kelola Produk -->
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#settings-nav" data-bs-toggle="collapse" href="#">
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                    <i class="ri-shopping-cart-2-line"></i><span>Kelola Produk</span><i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('kategori.index') }}">
+                            <i class="bi bi-circle"></i><span>Kategori</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('produk.index') }}">
+                            <i class="bi bi-circle"></i><span>Produk</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('kelola-stok.index') }}">
+                            <i class="bi bi-circle"></i><span>Kelola Stok</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Absensi -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#absensi-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-calendar-check"></i><span>Absensi</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="absensi-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('absensi.hari-ini') }}">
+                            <i class="bi bi-circle"></i><span>Absensi Hari Ini</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('absensi.daftar') }}">
+                            <i class="bi bi-circle"></i><span>Daftar Absen</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @elseif ($role === 'superadmin')
+            <!-- Kasir -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{{ route('kasir.transaksi') }}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Kasir</span>
+                </a>
+            </li>
+            <!-- Kelola Dana -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-menu-button-wide"></i>
+                    <span>Kelola Dana</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('tambah-saldo.index') }}">
+                            <i class="bi bi-circle"></i>
+                            <span>Saldo Awal</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pindahan-dana.index') }}">
+                            <i class="bi bi-circle"></i>
+                            <span>Pindahan Dana</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pinjaman-dana.index') }}">
+                            <i class="bi bi-circle"></i>
+                            <span>Pinjaman</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Kelola Produk -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                    <i class="ri-shopping-cart-2-line"></i><span>Kelola Produk</span><i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('kategori.index') }}">
+                            <i class="bi bi-circle"></i><span>Kategori</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('produk.index') }}">
+                            <i class="bi bi-circle"></i><span>Produk</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('kelola-stok.index') }}">
+                            <i class="bi bi-circle"></i><span>Kelola Stok</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Absensi -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#absensi-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-calendar-check"></i><span>Absensi</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="absensi-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{{ route('absensi.karyawan') }}">
+                            <i class="bi bi-circle"></i><span>Absensi Karyawan</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('absensi.hari-ini') }}">
+                            <i class="bi bi-circle"></i><span>Absensi Hari Ini</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('absensi.daftar') }}">
+                            <i class="bi bi-circle"></i><span>Daftar Absen</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Pengaturan -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#settings-nav" data-bs-toggle="collapse"
+                    href="#">
                     <i class="bi bi-gear"></i><span>Pengaturan</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="settings-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
