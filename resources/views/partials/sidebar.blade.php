@@ -151,7 +151,7 @@
                             <i class="bi bi-circle"></i><span>Absensi Karyawan</span>
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('absensi.hari-ini') }}">
                             <i class="bi bi-circle"></i><span>Absensi Hari Ini</span>
                         </a>
@@ -160,7 +160,7 @@
                         <a href="{{ route('absensi.daftar') }}">
                             <i class="bi bi-circle"></i><span>Daftar Absen</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </li>
             <!-- Pengaturan -->

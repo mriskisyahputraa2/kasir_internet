@@ -1,52 +1,20 @@
-<!-- resources/views/layouts/app.blade.php -->
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kasir Internet</title>
 
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
+@section('Title', 'Kasir Internet')
 
-    <!-- Favicons -->
-    <link href="{{ asset('assets/img/favicon.png') }}" rel="icon" />
-    <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon" />
+@section('content')
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-        rel="stylesheet" />
+    <style>
+        body {
+            background-color: rgba(99, 59, 72, 0.15);
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
 
-    <!-- Vendor CSS Files -->
-    <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/vendor/quill/quill.snow.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet" />
 
-    <!-- Template Main CSS File -->
-    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" />
-</head>
 
-<style>
-    body {
-        background-color: rgba(99, 59, 72, 0.15);
-        font-family: 'Poppins', sans-serif;
-    }
-</style>
-
-<body>
-
-    @include('partials.header')
 
     @if ($errors->any())
         <div class="alert alert-danger"
@@ -82,68 +50,116 @@
         </div>
     @endif
 
-    <main class="main {{ !$sesiAktif ? 'disabled-when-closed' : '' }}" style="margin-top: 75px;">
-        <div class="mx-5">
-            <!-- Header: Judul dan Info Toko -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="pagetitle">
-                    <h1 class="fw-bold" style="color: #633B48;">Manajemen Transaksi dan Kasir</h1>
+    <main class="main {{ !$sesiAktif ? 'disabled-when-closed' : '' }}">
+        <!-- Header: Judul dan Info Toko -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="pagetitle">
+                <h1 class="fw-bold" style="color: #633B48;">Manajemen Transaksi dan Kasir</h1>
 
-                    @if (session()->has('id_toko'))
-                        <nav style="--bs-breadcrumb-divider: ':';">
-                            <ol class="breadcrumb small">
-                                <li class="breadcrumb-item"><a href="#">Outlet</a></li>
-                                <li class="breadcrumb-item active">{{ $toko->nama }}</li>
-                            </ol>
-                        </nav>
-                    @else
-                        <p class="text-muted">Toko: Belum dipilih</p>
-                    @endif
-                </div>
-
-                <div class="text-end">
-                    <h5 class="text-dark mb-0">
-                        <span class="fw-normal">Total Saldo:</span>
-                        <span class="fw-bold text-success">Rp {{ number_format($totalSaldo, 0, ',', '.') }}</span>
-                    </h5>
-                </div>
+                @if (session()->has('id_toko'))
+                    <nav style="--bs-breadcrumb-divider: ':';">
+                        <ol class="breadcrumb small">
+                            <li class="breadcrumb-item"><a href="#">Outlet</a></li>
+                            <li class="breadcrumb-item active">{{ $toko->nama }}</li>
+                        </ol>
+                    </nav>
+                @else
+                    <p class="text-muted">Toko: Belum dipilih</p>
+                @endif
             </div>
 
-            <!-- Saldo dari Platform -->
-            <div class="row g-3 mb-4">
-                @foreach ($tambahSaldos as $saldo)
-                    <div class="col-md-3">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body mt-4">
-                                {{-- <p class="text-muted mb-1">Platform</p> --}}
-                                <h6 class="fw-semibold text-dark">{{ $saldo->nama_platform }}</h6>
-                                <p class="mb-0 fw-bold fs-5 text-primary">Rp
-                                    {{ number_format($saldo->saldo, 0, ',', '.') }}</p>
-                            </div>
+            <div class="text-end">
+                <h5 class="text-dark mb-0">
+                    <span class="fw-normal">Total Saldo:</span>
+                    <span class="fw-bold text-success">Rp {{ number_format($totalSaldo, 0, ',', '.') }}</span>
+                </h5>
+            </div>
+        </div>
+
+        <!-- Saldo dari Platform -->
+        <div class="row g-3 mb-4">
+            @foreach ($tambahSaldos as $saldo)
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body mt-4">
+                            {{-- <p class="text-muted mb-1">Platform</p> --}}
+                            <h6 class="fw-semibold text-dark">{{ $saldo->nama_platform }}</h6>
+                            <p class="mb-0 fw-bold fs-5 text-primary">Rp
+                                {{ number_format($saldo->saldo, 0, ',', '.') }}</p>
                         </div>
                     </div>
-                @endforeach
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Transaksi -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-dark">Pilih Barang</h5>
+                <button type="button" class="btn btn-sm text-white" style="background-color: #633B48"
+                    data-bs-toggle="modal" data-bs-target="#modalBayarNanti">
+                    Lanjut Transaksi
+                </button>
             </div>
 
-            <!-- Transaksi -->
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-dark">Pilih Barang</h5>
-                    <button type="button" class="btn btn-sm text-white" style="background-color: #633B48"
-                        data-bs-toggle="modal" data-bs-target="#modalBayarNanti">
-                        Lanjut Transaksi
-                    </button>
-                </div>
-                {{-- menampilkan transasksi produk --}}
-                <div class="card-body">
-                    @include('partials.transaksi')
+            <!-- Modal untuk Daftar Transaksi (Bayar Nanti) -->
+            <div class="modal fade text-dark" id="modalBayarNanti" tabindex="-1" aria-labelledby="modalBayarNantiLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalBayarNantiLabel">Daftar Transaksi Bayar Nanti</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID Transaksi</th>
+                                        <th>Total Harga</th>
+                                        <th>Tanggal</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($transaksis as $transaksi)
+                                        <tr>
+                                            <td>{{ $transaksi->id }}</td>
+                                            <td>{{ formatRupiah($transaksi->total_harga) }}</td>
+                                            <td>{{ $transaksi->created_at->format('d-m-Y H:i') }}</td>
+                                            <td>
+                                                <a href="{{ route('transaksi.lanjutkan', $transaksi->id) }}"
+                                                    class="btn text-white" style="background-color: #633B48">
+                                                    Lanjutkan Pembayaran
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
+            {{-- menampilkan produk --}}
+            <div class="card-body">
+                @include('partials.transaksi')
+            </div>
+            {{-- end menampilkan produk --}}
+        </div>
+
+
+
         </div>
     </main>
 
     @include('partials.modals')
-    @include('partials.scripts')
+
 
     @if (($role === 'kasir' || $role === 'admin') && !$sesiAktif)
         <style>
@@ -165,6 +181,9 @@
             }
         </style>
     @endif
+
+
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -337,13 +356,12 @@
 
     {{-- script kasir transaksi --}}
     @include('partials.scripts')
-    <footer class="text-center py-3" style="font-size: 12px; border-top: 1px solid rgb(214, 231, 247)">
-        <div class="copyright">
-            {{-- &copy; Copyright <strong><span>Kasir Internet</span></strong>. All Rights Reserved --}}
-            &copy; Copyright <strong><span>Kasir Internet</span></strong>. All Rights Reserved
-        </div>
 
-    </footer>
+
+@endsection
+
+
+@section('script')
 
     <!-- Vendor JS Files -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -367,6 +385,4 @@
             });
         </script>
     @endif
-</body>
-
-</html>
+@endsection

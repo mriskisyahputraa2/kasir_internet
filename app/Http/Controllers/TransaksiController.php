@@ -17,9 +17,7 @@ class TransaksiController extends Controller
     public function bayarNanti()
     {
         $idToko = session('id_toko');
-        $transaksis = Transaksi::where('id_toko', $idToko)
-            ->where('status_pembayaran', 'Bayar Nanti')
-            ->get();
+        $transaksis = Transaksi::where('id_toko', $idToko)->where('status_pembayaran', 'Bayar Nanti')->get();
         return view('transaksi.bayar_nanti', compact('transaksis'));
     }
 
@@ -30,9 +28,7 @@ class TransaksiController extends Controller
     {
         $idToko = session('id_toko');
         $produks = Produk::where('id_toko', $idToko)->get();
-        $transaksis = Transaksi::where('id_toko', $idToko)
-            ->where('status_pembayaran', 'Bayar Nanti')
-            ->get();
+        $transaksis = Transaksi::where('id_toko', $idToko)->where('status_pembayaran', 'Bayar Nanti')->get();
         return view('transaksi.index', compact('produks', 'transaksis'));
     }
 
@@ -46,17 +42,19 @@ class TransaksiController extends Controller
         //     'jumlah.*' => 'required|integer|min:1',
         //     'status_pembayaran' => 'required|in:Belum Lunas,Bayar Nanti',
         // ]);
-        $request->validate([
-            'produk_id' => 'required|array|min:1',
-            'produk_id.*' => 'required|exists:produks,id',
-            'jumlah' => 'required|array|min:1',
-            'jumlah.*' => 'required|integer|min:1',
-            'status_pembayaran' => 'required|in:Belum Lunas,Bayar Nanti',
-        ], [
-            'produk_id.required' => 'Silakan tambahkan minimal satu produk sebelum memproses transaksi.',
-            'jumlah.required' => 'Jumlah produk tidak boleh kosong.',
-        ]);
-
+        $request->validate(
+            [
+                'produk_id' => 'required|array|min:1',
+                'produk_id.*' => 'required|exists:produks,id',
+                'jumlah' => 'required|array|min:1',
+                'jumlah.*' => 'required|integer|min:1',
+                'status_pembayaran' => 'required|in:Belum Lunas,Bayar Nanti',
+            ],
+            [
+                'produk_id.required' => 'Silakan tambahkan minimal satu produk sebelum memproses transaksi.',
+                'jumlah.required' => 'Jumlah produk tidak boleh kosong.',
+            ],
+        );
 
         $idToko = session('id_toko');
         $totalHarga = 0;
@@ -114,51 +112,88 @@ class TransaksiController extends Controller
     public function pembayaran($id)
     {
         $transaksi = Transaksi::with('details.produk')->findOrFail($id);
+        // Hitung total diskon dari semua detail
+        $totalDiskon = $transaksi->details->sum(function ($detail) {
+            return ($detail->diskon ?? 0) * $detail->jumlah;
+        });
 
-        return view('transaksi.pembayaran', compact('transaksi',));
+        return view('transaksi.pembayaran', compact('transaksi', 'totalDiskon'));
     }
     /**
      * Menyelesaikan pembayaran.
      */
     public function completePayment(Request $request, $id)
     {
+        // $request->validate([
+        //     'bayar' => 'required|string',
+        //     'diskon' => 'nullable|string',
+        // ]);
+
+        // // Fungsi untuk mengonversi format Rupiah ke angka
+        // function convertToAngka($rupiah)
+        // {
+        //     return (int) str_replace(['Rp ', '.'], '', $rupiah);
+        // }
+
+        // // Konversi input diskon dan bayar ke angka
+        // $diskon = $request->diskon ? convertToAngka($request->diskon) : 0;
+        // $bayar = convertToAngka($request->bayar);
+
+        // // Ambil data transaksi
+        // $transaksi = Transaksi::findOrFail($id);
+        // $totalHarga = $transaksi->total_harga;
+
+        // // Hitung total setelah diskon
+        // $totalSetelahDiskon = $totalHarga - $diskon;
+
+        // // Update transaksi
+        // $transaksi->update([
+        //     'diskon' => $diskon,
+        //     'total_harga' => $totalSetelahDiskon,
+        //     'bayar' => $bayar,
+        //     'kembalian' => $bayar - $totalSetelahDiskon,
+        //     'status_pembayaran' => 'Lunas',
+        // ]);
+
+        // // Tambahkan total pembayaran ke saldo tujuan
+        // $tujuanSaldo = TambahSaldo::find(1);
+        // if ($tujuanSaldo) {
+        //     $tujuanSaldo->increment('saldo', $totalSetelahDiskon);
+        // }
+
         $request->validate([
             'bayar' => 'required|string',
-            'diskon' => 'nullable|string',
         ]);
 
-        // Fungsi untuk mengonversi format Rupiah ke angka
         function convertToAngka($rupiah)
         {
             return (int) str_replace(['Rp ', '.'], '', $rupiah);
         }
 
-        // Konversi input diskon dan bayar ke angka
-        $diskon = $request->diskon ? convertToAngka($request->diskon) : 0;
         $bayar = convertToAngka($request->bayar);
 
-        // Ambil data transaksi
-        $transaksi = Transaksi::findOrFail($id);
-        $totalHarga = $transaksi->total_harga;
+        $transaksi = Transaksi::with('details')->findOrFail($id);
 
-        // Hitung total setelah diskon
-        $totalSetelahDiskon = $totalHarga - $diskon;
+        // Hitung total diskon dari detail
+        $totalDiskon = $transaksi->details->sum(function ($detail) {
+            return ($detail->diskon ?? 0) * $detail->jumlah;
+        });
 
-        // Update transaksi
+        $totalHargaAwal = $transaksi->total_harga + $totalDiskon;
+        $totalSetelahDiskon = $totalHargaAwal - $totalDiskon;
+
         $transaksi->update([
-            'diskon' => $diskon,
+            'diskon' => $totalDiskon,
             'total_harga' => $totalSetelahDiskon,
             'bayar' => $bayar,
             'kembalian' => $bayar - $totalSetelahDiskon,
             'status_pembayaran' => 'Lunas',
         ]);
 
-        // Tambahkan total pembayaran ke saldo tujuan
         $tujuanSaldo = TambahSaldo::find(1);
         if ($tujuanSaldo) {
             $tujuanSaldo->increment('saldo', $totalSetelahDiskon);
         }
-
         return redirect()->route('kasir.transaksi')->with('success', 'Pembayaran berhasil dilanjutkan!');
     }
 
@@ -168,9 +203,7 @@ class TransaksiController extends Controller
     public function listBayarNanti()
     {
         $idToko = session('id_toko');
-        $transaksis = Transaksi::where('id_toko', $idToko)
-            ->where('status_pembayaran', 'Bayar Nanti')
-            ->get();
+        $transaksis = Transaksi::where('id_toko', $idToko)->where('status_pembayaran', 'Bayar Nanti')->get();
         return view('transaksi.bayar_nanti', compact('transaksis'));
     }
 
@@ -179,8 +212,13 @@ class TransaksiController extends Controller
      */
     public function lanjutkanPembayaran($id)
     {
+        // $transaksi = Transaksi::with('details.produk')->findOrFail($id);
+        // return view('transaksi.pembayaran', compact('transaksi'));
         $transaksi = Transaksi::with('details.produk')->findOrFail($id);
-        return view('transaksi.pembayaran', compact('transaksi'));
+        $totalDiskon = $transaksi->details->sum(function ($detail) {
+            return ($detail->diskon ?? 0) * $detail->jumlah;
+        });
+        return view('transaksi.pembayaran', compact('transaksi', 'totalDiskon'));
     }
 
     /**
@@ -196,7 +234,7 @@ class TransaksiController extends Controller
             'status_pembayaran' => 'Bayar Nanti',
             'bayar' => 0,
             'kembalian' => 0,
-            'diskon' => 0
+            'diskon' => 0,
         ]);
 
         return redirect()->route('kasir.transaksi')->with('success', 'Transaksi disimpan sebagai Bayar Nanti.');

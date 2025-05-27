@@ -103,47 +103,7 @@
     </div>
 </div>
 
-<!-- Modal untuk Daftar Transaksi Bayar Nanti -->
-<div class="modal fade" id="modalBayarNanti" tabindex="-1" aria-labelledby="modalBayarNantiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalBayarNantiLabel">Daftar Transaksi Bayar Nanti</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID Transaksi</th>
-                            <th>Total Harga</th>
-                            <th>Tanggal</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($transaksis as $transaksi)
-                            <tr>
-                                <td>{{ $transaksi->id }}</td>
-                                <td>{{ formatRupiah($transaksi->total_harga) }}</td>
-                                <td>{{ $transaksi->created_at->format('d-m-Y H:i') }}</td>
-                                <td>
-                                    <a href="{{ route('transaksi.lanjutkan', $transaksi->id) }}" class="btn text-white"
-                                        style="background-color: #633B48">
-                                        Lanjutkan Pembayaran
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- sesi -->
 <!-- Cashier Modal -->
@@ -153,7 +113,7 @@
             <div class="modal-header">
 
                 {{-- popup buka kasir dan tutup kasir --}}
-                <h5 class="modal-title">
+                <h5 class="modal-title text-dark">
                     @if ($sesiAktif && is_object($sesiAktif))
                         Tutup Kasir
                     @else
@@ -165,7 +125,7 @@
             <form action="{{ $sesiAktif && is_object($sesiAktif) ? route('tutup.kasir') : route('buka.kasir') }}"
                 method="POST">
                 @csrf
-                <div class="modal-body">
+                <div class="modal-body text-dark">
                     @if ($sesiAktif && is_object($sesiAktif))
                         <div class="alert alert-info">
                             <h5>Informasi Sesi Kasir</h5>

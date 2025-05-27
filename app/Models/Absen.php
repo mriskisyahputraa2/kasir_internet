@@ -29,7 +29,7 @@ class Absen extends Model
         'waktu_masuk' => 'datetime',
         'waktu_keluar' => 'datetime'
     ];
-
+// 
     // Format waktu dalam WIB (Asia/Jakarta)
     // public function getWaktuAbsenWibAttribute()
     // {
