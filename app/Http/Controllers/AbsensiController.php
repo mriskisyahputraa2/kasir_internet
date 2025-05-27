@@ -84,6 +84,11 @@ class AbsensiController extends Controller
         $today = now()->toDateString();
         $currentTime = now()->setTimezone('Asia/Jakarta');
 
+        if (session()->has('id_toko')) {
+            $toko = \App\Models\Toko::find(session('id_toko'));
+        }
+
+
         // Validasi apakah sudah absen hari ini
         $existingAbsen = Absen::where('id_user', $user->id)
             ->where('tanggal_absen', $today)
@@ -121,12 +126,12 @@ class AbsensiController extends Controller
                 'id_toko' => session('id_toko'),
                 'id_shift' => $shift->id,
                 'status' => 'Tidak Bekerja',
-                'lokasi' => $request->ip()
+                'lokasi' => $toko ? $toko->lokasi : '',
             ]);
 
             return redirect()
                 ->route('absensi.hari-ini')
-                ->with('error', 'Tidak bisa absen karena bukan jam kerja Anda (Shift: '.$shift->waktu_mulai.' - '.$shift->waktu_selesai.')');
+                ->with('error', 'Tidak bisa absen karena bukan jam kerja Anda (Shift: ' . $shift->waktu_mulai . ' - ' . $shift->waktu_selesai . ')');
         }
 
         // Tentukan status berdasarkan keterlambatan
@@ -151,7 +156,7 @@ class AbsensiController extends Controller
 
         return redirect()
             ->route('absensi.hari-ini')
-            ->with('success', 'Absen masuk berhasil dicatat. Status: '.$status);
+            ->with('success', 'Absen masuk berhasil dicatat. Status: ' . $status);
     }
 
     // Proses absen keluar
@@ -160,6 +165,10 @@ class AbsensiController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
         $currentTime = now()->setTimezone('Asia/Jakarta');
+        if (session()->has('id_toko')) {
+            $toko = \App\Models\Toko::find(session('id_toko'));
+        }
+
 
         // Cari absen hari ini
         $absen = Absen::where('id_user', $user->id)
@@ -197,7 +206,7 @@ class AbsensiController extends Controller
         // Update absen keluar
         $absen->update([
             'waktu_keluar' => $currentTime,
-            'lokasi' => $request->ip()
+            'lokasi' => $toko ? $toko->lokasi : '-',
         ]);
 
         return redirect()
